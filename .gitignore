@@ -1,0 +1,29 @@
+# Client
+client/node_modules/
+client/dist/
+client/.env
+client/.env.local
+
+# Server
+server/target/
+
+# Secrets
+server/src/main/resources/application.properties
+server/src/main/resources/application-local.properties
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
