@@ -2,6 +2,8 @@ package app.controller;
 
 import app.dto.WalletResponse;
 import app.service.WalletService;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -20,35 +22,41 @@ public class WalletController {
 
     @GetMapping("/me")
     public WalletResponse getWallet(
-            @RequestParam Long userId) {
+            java.security.Principal principal) {
 
-        return walletService.getWallet(userId);
+        return walletService.getWallet(principal.getName());
     }
 
     @PostMapping("/deposit")
     public WalletResponse deposit(
-            @RequestParam Long userId,
+            java.security.Principal principal,
             @RequestParam BigDecimal amount) {
 
-        return walletService.deposit(userId, amount);
+        return walletService.deposit(
+                principal.getName(),
+                amount
+        );
     }
 
     @PostMapping("/withdraw")
     public WalletResponse withdraw(
-            @RequestParam Long userId,
+            java.security.Principal principal,
             @RequestParam BigDecimal amount) {
 
-        return walletService.withdraw(userId, amount);
+        return walletService.withdraw(
+                principal.getName(),
+                amount
+        );
     }
 
     @PostMapping("/send")
     public Map<String, String> send(
-            @RequestParam Long userId,
+            java.security.Principal principal,
             @RequestParam String receiverEmail,
             @RequestParam BigDecimal amount) {
 
         String result = walletService.sendMoney(
-                userId,
+                principal.getName(),
                 receiverEmail,
                 amount
         );
@@ -57,10 +65,10 @@ public class WalletController {
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public org.springframework.http.ResponseEntity<Map<String, String>>
-    handleException(RuntimeException exception) {
+    public ResponseEntity<Map<String, String>> handleException(
+            RuntimeException exception) {
 
-        return org.springframework.http.ResponseEntity
+        return ResponseEntity
                 .badRequest()
                 .body(Map.of(
                         "error",

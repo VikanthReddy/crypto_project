@@ -3,6 +3,7 @@ package app.service;
 import app.dto.UserResponse;
 import app.model.User;
 import app.repository.UserRepository;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,12 +15,14 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public UserResponse getProfile(Long id) {
+    public UserResponse getProfile(String email) {
 
         User user = userRepository
-                .findById(id)
+                .findByEmail(email)
                 .orElseThrow(() ->
-                        new RuntimeException("User not found"));
+                        new RuntimeException(
+                                "User not found"
+                        ));
 
         return new UserResponse(
                 user.getId(),

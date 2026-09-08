@@ -880,3 +880,282 @@
     font-size: 28px;
   }
 }
+/* =========================
+   LANDING PAGE
+========================= */
+
+.landing-page {
+  min-height: 100vh;
+
+  background:
+    radial-gradient(
+      circle at 15% 20%,
+      rgba(37, 99, 235, 0.18),
+      transparent 30%
+    ),
+    radial-gradient(
+      circle at 85% 75%,
+      rgba(124, 58, 237, 0.18),
+      transparent 32%
+    ),
+    #070b14;
+
+  color: #f8fafc;
+}
+
+
+/* =========================
+   LANDING NAVBAR
+========================= */
+
+.landing-nav {
+  height: 78px;
+
+  padding: 0 7%;
+
+  position: relative;
+
+  background: rgba(7, 11, 20, 0.72);
+
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+
+/* =========================
+   HERO
+========================= */
+
+.hero {
+  min-height: calc(100vh - 78px);
+
+  display: flex;
+  align-items: center;
+
+  width: min(1200px, 86%);
+
+  margin: 0 auto;
+
+  position: relative;
+}
+
+
+/* decorative glow */
+
+.hero::before {
+  content: "";
+
+  position: absolute;
+
+  width: 420px;
+  height: 420px;
+
+  left: -150px;
+  top: 80px;
+
+  border-radius: 50%;
+
+  background: rgba(37, 99, 235, 0.12);
+
+  filter: blur(80px);
+
+  pointer-events: none;
+}
+
+.hero::after {
+  content: "";
+
+  position: absolute;
+
+  width: 360px;
+  height: 360px;
+
+  right: -100px;
+  bottom: 50px;
+
+  border-radius: 50%;
+
+  background: rgba(124, 58, 237, 0.12);
+
+  filter: blur(80px);
+
+  pointer-events: none;
+}
+
+
+/* =========================
+   HERO CONTENT
+========================= */
+
+.hero-content {
+  position: relative;
+
+  z-index: 2;
+
+  max-width: 780px;
+
+  padding: 40px 0;
+}
+
+
+/* =========================
+   HERO LABEL
+========================= */
+
+.hero-label {
+  margin-bottom: 18px;
+
+  color: #60a5fa;
+
+  font-size: 13px;
+
+  font-weight: 800;
+
+  letter-spacing: 3px;
+}
+
+
+/* =========================
+   HERO TITLE
+========================= */
+
+.hero h1 {
+  margin: 0;
+
+  font-size: clamp(48px, 7vw, 82px);
+
+  line-height: 1.02;
+
+  letter-spacing: -3px;
+
+  font-weight: 850;
+
+  color: #f8fafc;
+}
+
+.hero h1 span {
+  background:
+    linear-gradient(
+      90deg,
+      #60a5fa,
+      #818cf8,
+      #c084fc
+    );
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+
+/* =========================
+   DESCRIPTION
+========================= */
+
+.hero-description {
+  max-width: 650px;
+
+  margin-top: 25px;
+
+  color: #94a3b8;
+
+  font-size: 18px;
+
+  line-height: 1.7;
+}
+
+
+/* =========================
+   HERO BUTTONS
+========================= */
+
+.hero-buttons {
+  display: flex;
+
+  gap: 14px;
+
+  margin-top: 32px;
+}
+
+.hero-buttons .primary-button,
+.hero-buttons .secondary-button {
+  min-width: 150px;
+
+  padding: 14px 22px;
+
+  border-radius: 12px;
+
+  font-size: 15px;
+}
+
+
+/* =========================
+   NAV SIGNUP
+========================= */
+
+.nav-signup {
+  padding: 10px 17px;
+
+  border-radius: 10px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #2563eb,
+      #7c3aed
+    ) !important;
+
+  color: #ffffff !important;
+
+  box-shadow:
+    0 8px 20px rgba(37, 99, 235, 0.2);
+}
+
+
+/* =========================
+   LANDING MOBILE
+========================= */
+
+@media (max-width: 700px) {
+
+  .landing-nav {
+    padding: 0 20px;
+  }
+
+  .landing-nav .nav-links {
+    gap: 10px;
+  }
+
+  .landing-nav .nav-links a:not(.nav-signup) {
+    display: none;
+  }
+
+  .hero {
+    width: 90%;
+
+    min-height: calc(100vh - 78px);
+  }
+
+  .hero-content {
+    padding: 30px 0;
+  }
+
+  .hero h1 {
+    font-size: 48px;
+
+    letter-spacing: -2px;
+  }
+
+  .hero-description {
+    font-size: 16px;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+
+    width: 100%;
+  }
+
+  .hero-buttons .primary-button,
+  .hero-buttons .secondary-button {
+    width: 100%;
+  }
+}

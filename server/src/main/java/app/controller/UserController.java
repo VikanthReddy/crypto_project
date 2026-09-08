@@ -2,7 +2,10 @@ package app.controller;
 
 import app.dto.UserResponse;
 import app.service.UserService;
+
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @RestController
 @RequestMapping("/api/user")
@@ -17,8 +20,10 @@ public class UserController {
 
     @GetMapping("/profile")
     public UserResponse getProfile(
-            @RequestParam Long id) {
+            Principal principal) {
 
-        return userService.getProfile(id);
+        return userService.getProfile(
+                principal.getName()
+        );
     }
 }
