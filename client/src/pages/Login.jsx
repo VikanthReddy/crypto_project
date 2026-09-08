@@ -1,121 +1,124 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 import { login } from "../services/api";
-import Toast from "../components/Toast";
 
 function Login() {
+
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  });
+  const [email, setEmail] =
+    useState("");
 
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("success");
+  const [password, setPassword] =
+    useState("");
 
-  const handleChange = (event) => {
-    setForm({
-      ...form,
-      [event.target.name]: event.target.value,
-    });
-  };
+  const [error, setError] =
+    useState("");
+
+  const [loading, setLoading] =
+    useState(false);
+
 
   const handleSubmit = async (event) => {
+
     event.preventDefault();
 
-    setMessage("");
-
-    if (!form.email || !form.password) {
-      setMessageType("error");
-      setMessage("Please enter email and password.");
-      return;
-    }
+    setError("");
+    setLoading(true);
 
     try {
-      setLoading(true);
 
-      const user = await login(
-        form.email,
-        form.password
+      const data = await login(
+        email,
+        password
       );
 
-      localStorage.setItem("user", JSON.stringify(user));
+      // Save JWT
+      localStorage.setItem(
+        "token",
+        data.token
+      );
 
-      setMessageType("success");
-      setMessage("Login successful.");
+      // Save user
+      localStorage.setItem(
+        "user",
+        JSON.stringify(data.user)
+      );
 
-      setTimeout(() => {
-        navigate("/wallet");
-      }, 700);
+      navigate("/wallet");
 
     } catch (error) {
-      setMessageType("error");
-      setMessage(error.message);
+
+      setError(
+        error.message ||
+        "Login failed"
+      );
+
     } finally {
+
       setLoading(false);
     }
   };
+
 
   return (
     <div className="auth-page">
 
       <div className="auth-card">
 
-        <h1>Welcome Back</h1>
+        <h1>Login</h1>
 
-        <p className="auth-subtitle">
-          Login to your crypto wallet
+        <p>
+          Login to your Crypto Wallet
         </p>
 
-        <Toast
-          message={message}
-          type={messageType}
-          onClose={() => setMessage("")}
-        />
-
-        <form onSubmit={handleSubmit}>
-
-          <div className="form-group">
-            <label>Email</label>
-
-            <input
-              type="email"
-              name="email"
-              placeholder="Enter your email"
-              value={form.email}
-              onChange={handleChange}
-            />
+        {error && (
+          <div className="error-message">
+            {error}
           </div>
+        )}
 
-          <div className="form-group">
-            <label>Password</label>
+        <form
+          onSubmit={handleSubmit}
+        >
 
-            <input
-              type="password"
-              name="password"
-              placeholder="Enter your password"
-              value={form.password}
-              onChange={handleChange}
-            />
-          </div>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(event) =>
+              setEmail(event.target.value)
+            }
+            required
+          />
+
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(event) =>
+              setPassword(event.target.value)
+            }
+            required
+          />
 
           <button
             type="submit"
-            className="primary-button full-width"
             disabled={loading}
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading
+              ? "Logging in..."
+              : "Login"}
           </button>
 
         </form>
 
-        <p className="auth-footer">
+        <p>
           Don't have an account?{" "}
+
           <Link to="/signup">
-            Create Account
+            Create account
           </Link>
         </p>
 

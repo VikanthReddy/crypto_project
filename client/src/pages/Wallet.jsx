@@ -26,7 +26,8 @@ function Wallet() {
     try {
       setLoading(true);
 
-      const data = await getWallet(user.id);
+      // JWT identifies the logged-in user
+      const data = await getWallet();
 
       setWallet(data);
     } catch (error) {
@@ -38,7 +39,7 @@ function Wallet() {
   };
 
   useEffect(() => {
-    if (user?.id) {
+    if (user) {
       loadWallet();
     }
   }, []);
@@ -53,10 +54,7 @@ function Wallet() {
     try {
       setActionLoading(true);
 
-      const updatedWallet = await deposit(
-        user.id,
-        amount
-      );
+      const updatedWallet = await deposit(amount);
 
       setWallet(updatedWallet);
       setAmount("");
@@ -81,10 +79,7 @@ function Wallet() {
     try {
       setActionLoading(true);
 
-      const updatedWallet = await withdraw(
-        user.id,
-        amount
-      );
+      const updatedWallet = await withdraw(amount);
 
       setWallet(updatedWallet);
       setAmount("");
@@ -105,30 +100,36 @@ function Wallet() {
         <Navbar />
 
         <div className="loading-page">
-          Loading wallet...
+          <div className="loading-spinner"></div>
+          <p>Loading your wallet...</p>
         </div>
       </>
     );
   }
 
   return (
-    <div>
+    <div className="wallet-page">
 
       <Navbar />
 
       <main className="dashboard">
 
-        <div className="page-header">
+        {/* HEADER */}
+        <section className="dashboard-header">
+
           <div>
-            <p className="small-label">
-              YOUR WALLET
-            </p>
+            <p className="small-label">YOUR WALLET</p>
 
             <h1>
               Welcome, {wallet?.userName || user?.name}
             </h1>
+
+            <p className="dashboard-subtitle">
+              Manage your crypto wallet securely.
+            </p>
           </div>
-        </div>
+
+        </section>
 
         <Toast
           message={message}
@@ -136,97 +137,182 @@ function Wallet() {
           onClose={() => setMessage("")}
         />
 
+        {/* BALANCE */}
         <section className="balance-card">
 
-          <p>Available Balance</p>
+          <div className="balance-top">
 
-          <h2>
-            ₹{Number(wallet?.balance || 0).toFixed(2)}
-          </h2>
+            <div>
+              <p className="balance-label">
+                AVAILABLE BALANCE
+              </p>
 
-          <p className="wallet-email">
-            {wallet?.email || user?.email}
+              <h2>
+                ₹{Number(wallet?.balance || 0).toFixed(2)}
+              </h2>
+
+              <p className="wallet-email">
+                {wallet?.email || user?.email}
+              </p>
+            </div>
+
+            <div className="wallet-icon">
+              ₿
+            </div>
+
+          </div>
+
+          <div className="balance-line"></div>
+
+          <p className="balance-status">
+            ● Wallet active
           </p>
 
         </section>
 
+
+        {/* ACTIONS */}
         <section className="action-grid">
 
-          <div className="action-card">
+          {/* DEPOSIT */}
+          <div className="action-card deposit-card">
 
-            <h3>Add Money</h3>
+            <div className="card-icon">
+              +
+            </div>
 
-            <p>
-              Deposit money into your wallet.
-            </p>
+            <div className="card-content">
 
-            <input
-              type="number"
-              min="0"
-              step="0.01"
-              placeholder="Amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
+              <h3>Add Money</h3>
 
-            <button
-              className="primary-button"
-              onClick={handleDeposit}
-              disabled={actionLoading}
-            >
-              Deposit
-            </button>
+              <p>
+                Deposit money into your wallet.
+              </p>
+
+            </div>
+
+            <div className="action-form">
+
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="Enter amount"
+                value={amount}
+                onChange={(e) =>
+                  setAmount(e.target.value)
+                }
+              />
+
+              <button
+                className="primary-button"
+                onClick={handleDeposit}
+                disabled={actionLoading}
+              >
+                {actionLoading
+                  ? "Processing..."
+                  : "Deposit"}
+              </button>
+
+            </div>
 
           </div>
 
-          <div className="action-card">
 
-            <h3>Withdraw</h3>
+          {/* WITHDRAW */}
+          <div className="action-card withdraw-card">
 
-            <p>
-              Withdraw money from your wallet.
-            </p>
+            <div className="card-icon">
+              −
+            </div>
 
-            <button
-              className="secondary-button"
-              onClick={handleWithdraw}
-              disabled={actionLoading}
-            >
-              Withdraw
-            </button>
+            <div className="card-content">
+
+              <h3>Withdraw</h3>
+
+              <p>
+                Withdraw money from your wallet.
+              </p>
+
+            </div>
+
+            <div className="action-form">
+
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="Enter amount"
+                value={amount}
+                onChange={(e) =>
+                  setAmount(e.target.value)
+                }
+              />
+
+              <button
+                className="secondary-button"
+                onClick={handleWithdraw}
+                disabled={actionLoading}
+              >
+                {actionLoading
+                  ? "Processing..."
+                  : "Withdraw"}
+              </button>
+
+            </div>
 
           </div>
 
-          <div className="action-card">
 
-            <h3>Send Money</h3>
+          {/* SEND */}
+          <div className="action-card send-card">
 
-            <p>
-              Send money to another user's email.
-            </p>
+            <div className="card-icon">
+              ↑
+            </div>
+
+            <div className="card-content">
+
+              <h3>Send Money</h3>
+
+              <p>
+                Send money to another user's email.
+              </p>
+
+            </div>
 
             <Link
               to="/send"
-              className="primary-button"
+              className="card-button primary-button"
             >
-              Send
+              Send Money
             </Link>
 
           </div>
 
-          <div className="action-card">
 
-            <h3>Receive</h3>
+          {/* RECEIVE */}
+          <div className="action-card receive-card">
 
-            <p>
-              Share your email to receive money.
-            </p>
+            <div className="card-icon">
+              ↓
+            </div>
+
+            <div className="card-content">
+
+              <h3>Receive</h3>
+
+              <p>
+                Share your wallet information to receive money.
+              </p>
+
+            </div>
 
             <Link
               to="/receive"
-              className="secondary-button"
+              className="card-button secondary-button"
             >
-              Receive
+              Receive Money
             </Link>
 
           </div>

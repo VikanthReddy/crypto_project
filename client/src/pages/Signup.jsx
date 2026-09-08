@@ -1,64 +1,83 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import {
+  useNavigate,
+  Link
+} from "react-router-dom";
 
-import { signup } from "../services/api";
-import Toast from "../components/Toast";
+import {
+  signup,
+  login
+} from "../services/api";
 
 function Signup() {
+
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
+  const [name, setName] =
+    useState("");
 
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState("success");
+  const [email, setEmail] =
+    useState("");
 
-  const handleChange = (event) => {
-    setForm({
-      ...form,
-      [event.target.name]: event.target.value,
-    });
-  };
+  const [password, setPassword] =
+    useState("");
+
+  const [error, setError] =
+    useState("");
+
+  const [loading, setLoading] =
+    useState(false);
+
 
   const handleSubmit = async (event) => {
+
     event.preventDefault();
 
-    setMessage("");
-
-    if (!form.name || !form.email || !form.password) {
-      setMessageType("error");
-      setMessage("Please fill in all fields.");
-      return;
-    }
+    setError("");
+    setLoading(true);
 
     try {
-      setLoading(true);
 
-      const user = await signup(
-        form.name,
-        form.email,
-        form.password
+      // Create account
+      await signup(
+        name,
+        email,
+        password
       );
 
-      localStorage.setItem("user", JSON.stringify(user));
+      // Login immediately
+      const data = await login(
+        email,
+        password
+      );
 
-      setMessageType("success");
-      setMessage("Account created successfully.");
+      // Save JWT
+      localStorage.setItem(
+        "token",
+        data.token
+      );
 
-      setTimeout(() => {
-        navigate("/wallet");
-      }, 800);
+      // Save user
+      localStorage.setItem(
+        "user",
+        JSON.stringify(data.user)
+      );
+
+      navigate("/wallet");
+
     } catch (error) {
-      setMessageType("error");
-      setMessage(error.message);
+
+      setError(
+        error.message ||
+        "Signup failed"
+      );
+
     } finally {
+
       setLoading(false);
     }
   };
+
 
   return (
     <div className="auth-page">
@@ -67,66 +86,64 @@ function Signup() {
 
         <h1>Create Account</h1>
 
-        <p className="auth-subtitle">
-          Create your crypto wallet account
+        <p>
+          Create your Crypto Wallet account
         </p>
 
-        <Toast
-          message={message}
-          type={messageType}
-          onClose={() => setMessage("")}
-        />
-
-        <form onSubmit={handleSubmit}>
-
-          <div className="form-group">
-            <label>Name</label>
-
-            <input
-              type="text"
-              name="name"
-              placeholder="Enter your name"
-              value={form.name}
-              onChange={handleChange}
-            />
+        {error && (
+          <div className="error-message">
+            {error}
           </div>
+        )}
 
-          <div className="form-group">
-            <label>Email</label>
+        <form
+          onSubmit={handleSubmit}
+        >
 
-            <input
-              type="email"
-              name="email"
-              placeholder="Enter your email"
-              value={form.email}
-              onChange={handleChange}
-            />
-          </div>
+          <input
+            type="text"
+            placeholder="Full Name"
+            value={name}
+            onChange={(event) =>
+              setName(event.target.value)
+            }
+            required
+          />
 
-          <div className="form-group">
-            <label>Password</label>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(event) =>
+              setEmail(event.target.value)
+            }
+            required
+          />
 
-            <input
-              type="password"
-              name="password"
-              placeholder="Enter your password"
-              value={form.password}
-              onChange={handleChange}
-            />
-          </div>
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(event) =>
+              setPassword(event.target.value)
+            }
+            required
+          />
 
           <button
             type="submit"
-            className="primary-button full-width"
             disabled={loading}
           >
-            {loading ? "Creating..." : "Create Account"}
+            {loading
+              ? "Creating account..."
+              : "Sign Up"}
           </button>
 
         </form>
 
-        <p className="auth-footer">
+        <p>
           Already have an account?{" "}
+
           <Link to="/login">
             Login
           </Link>

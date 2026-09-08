@@ -1,16 +1,29 @@
 const API_BASE_URL = "http://localhost:4040/api";
 
 async function request(endpoint, options = {}) {
-  try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      ...options,
-      headers: {
-        "Content-Type": "application/json",
-        ...(options.headers || {}),
-      },
-    });
+  const token = localStorage.getItem("token");
 
-    const contentType = response.headers.get("content-type");
+  const headers = {
+    "Content-Type": "application/json",
+    ...(options.headers || {}),
+  };
+
+  // Add JWT to every request when available
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}${endpoint}`,
+      {
+        ...options,
+        headers,
+      }
+    );
+
+    const contentType =
+      response.headers.get("content-type");
 
     let data;
 
@@ -20,14 +33,37 @@ async function request(endpoint, options = {}) {
       data = await response.text();
     }
 
+    // JWT expired or invalid
+    if (response.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+
+      window.location.href = "/login";
+
+      throw new Error(
+        "Session expired. Please login again."
+      );
+    }
+
+    // User authenticated but not authorized
+    if (response.status === 403) {
+      throw new Error(
+        "You are not authorized."
+      );
+    }
+
     if (!response.ok) {
       throw new Error(
-        data?.error || data || `Request failed: ${response.status}`
+        data?.error ||
+        data ||
+        `Request failed: ${response.status}`
       );
     }
 
     return data;
+
   } catch (error) {
+
     if (error instanceof TypeError) {
       throw new Error(
         "Cannot connect to server. Make sure Spring Boot is running on port 4040."
@@ -39,10 +75,16 @@ async function request(endpoint, options = {}) {
 }
 
 
-// ==================== AUTH ====================
+/* =========================
+   AUTH
+========================= */
 
-export const signup = (name, email, password) =>
-  request("/auth/signup", {
+export const signup = (
+  name,
+  email,
+  password
+) => {
+  return request("/auth/signup", {
     method: "POST",
     body: JSON.stringify({
       name,
@@ -50,60 +92,71 @@ export const signup = (name, email, password) =>
       password,
     }),
   });
+};
 
 
-export const login = (email, password) =>
-  request("/auth/login", {
+export const login = (
+  email,
+  password
+) => {
+  return request("/auth/login", {
     method: "POST",
     body: JSON.stringify({
       email,
       password,
     }),
   });
+};
 
 
-// ==================== USER ====================
+/* =========================
+   PROFILE
+========================= */
 
-export const getProfile = (userId) =>
-  request(`/user/profile?id=${encodeURIComponent(userId)}`);
-
-
-// ==================== WALLET ====================
-
-export const getWallet = (userId) =>
-  request(`/wallet/me?userId=${encodeURIComponent(userId)}`);
+export const getProfile = () => {
+  return request("/user/profile");
+};
 
 
-export const deposit = (userId, amount) =>
-  request(
-    `/wallet/deposit?userId=${encodeURIComponent(
-      userId
-    )}&amount=${encodeURIComponent(amount)}`,
+/* =========================
+   WALLET
+========================= */
+
+export const getWallet = () => {
+  return request("/wallet/me");
+};
+
+
+export const deposit = (amount) => {
+  return request(
+    `/wallet/deposit?amount=${encodeURIComponent(amount)}`,
     {
       method: "POST",
     }
   );
+};
 
 
-export const withdraw = (userId, amount) =>
-  request(
-    `/wallet/withdraw?userId=${encodeURIComponent(
-      userId
-    )}&amount=${encodeURIComponent(amount)}`,
+export const withdraw = (amount) => {
+  return request(
+    `/wallet/withdraw?amount=${encodeURIComponent(amount)}`,
     {
       method: "POST",
     }
   );
+};
 
 
-export const sendMoney = (userId, receiverEmail, amount) =>
-  request(
-    `/wallet/send?userId=${encodeURIComponent(
-      userId
-    )}&receiverEmail=${encodeURIComponent(
+export const sendMoney = (
+  receiverEmail,
+  amount
+) => {
+  return request(
+    `/wallet/send?receiverEmail=${encodeURIComponent(
       receiverEmail
     )}&amount=${encodeURIComponent(amount)}`,
     {
       method: "POST",
     }
   );
+};
