@@ -14,7 +14,10 @@ function Wallet() {
   const user = JSON.parse(localStorage.getItem("user") || "null");
 
   const [wallet, setWallet] = useState(null);
-  const [amount, setAmount] = useState("");
+
+  // Separate amounts for Deposit and Withdraw
+  const [depositAmount, setDepositAmount] = useState("");
+  const [withdrawAmount, setWithdrawAmount] = useState("");
 
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -44,8 +47,12 @@ function Wallet() {
     }
   }, []);
 
+  // =========================
+  // DEPOSIT
+  // =========================
+
   const handleDeposit = async () => {
-    if (!amount || Number(amount) <= 0) {
+    if (!depositAmount || Number(depositAmount) <= 0) {
       setMessageType("error");
       setMessage("Enter a valid amount.");
       return;
@@ -54,10 +61,12 @@ function Wallet() {
     try {
       setActionLoading(true);
 
-      const updatedWallet = await deposit(amount);
+      const updatedWallet = await deposit(depositAmount);
 
       setWallet(updatedWallet);
-      setAmount("");
+
+      // Clear only Deposit input
+      setDepositAmount("");
 
       setMessageType("success");
       setMessage("Deposit successful.");
@@ -69,8 +78,12 @@ function Wallet() {
     }
   };
 
+  // =========================
+  // WITHDRAW
+  // =========================
+
   const handleWithdraw = async () => {
-    if (!amount || Number(amount) <= 0) {
+    if (!withdrawAmount || Number(withdrawAmount) <= 0) {
       setMessageType("error");
       setMessage("Enter a valid amount.");
       return;
@@ -79,10 +92,12 @@ function Wallet() {
     try {
       setActionLoading(true);
 
-      const updatedWallet = await withdraw(amount);
+      const updatedWallet = await withdraw(withdrawAmount);
 
       setWallet(updatedWallet);
-      setAmount("");
+
+      // Clear only Withdraw input
+      setWithdrawAmount("");
 
       setMessageType("success");
       setMessage("Withdrawal successful.");
@@ -93,6 +108,10 @@ function Wallet() {
       setActionLoading(false);
     }
   };
+
+  // =========================
+  // LOADING
+  // =========================
 
   if (loading) {
     return (
@@ -114,11 +133,16 @@ function Wallet() {
 
       <main className="dashboard">
 
-        {/* HEADER */}
+        {/* =========================
+            HEADER
+        ========================= */}
+
         <section className="dashboard-header">
 
           <div>
-            <p className="small-label">YOUR WALLET</p>
+            <p className="small-label">
+              YOUR WALLET
+            </p>
 
             <h1>
               Welcome, {wallet?.userName || user?.name}
@@ -131,18 +155,26 @@ function Wallet() {
 
         </section>
 
+        {/* =========================
+            TOAST
+        ========================= */}
+
         <Toast
           message={message}
           type={messageType}
           onClose={() => setMessage("")}
         />
 
-        {/* BALANCE */}
+        {/* =========================
+            BALANCE
+        ========================= */}
+
         <section className="balance-card">
 
           <div className="balance-top">
 
             <div>
+
               <p className="balance-label">
                 AVAILABLE BALANCE
               </p>
@@ -154,6 +186,7 @@ function Wallet() {
               <p className="wallet-email">
                 {wallet?.email || user?.email}
               </p>
+
             </div>
 
             <div className="wallet-icon">
@@ -170,11 +203,16 @@ function Wallet() {
 
         </section>
 
+        {/* =========================
+            ACTIONS
+        ========================= */}
 
-        {/* ACTIONS */}
         <section className="action-grid">
 
-          {/* DEPOSIT */}
+          {/* =========================
+              DEPOSIT
+          ========================= */}
+
           <div className="action-card deposit-card">
 
             <div className="card-icon">
@@ -183,7 +221,9 @@ function Wallet() {
 
             <div className="card-content">
 
-              <h3>Add Money</h3>
+              <h3>
+                Add Money
+              </h3>
 
               <p>
                 Deposit money into your wallet.
@@ -198,9 +238,9 @@ function Wallet() {
                 min="0"
                 step="0.01"
                 placeholder="Enter amount"
-                value={amount}
+                value={depositAmount}
                 onChange={(e) =>
-                  setAmount(e.target.value)
+                  setDepositAmount(e.target.value)
                 }
               />
 
@@ -218,8 +258,10 @@ function Wallet() {
 
           </div>
 
+          {/* =========================
+              WITHDRAW
+          ========================= */}
 
-          {/* WITHDRAW */}
           <div className="action-card withdraw-card">
 
             <div className="card-icon">
@@ -228,7 +270,9 @@ function Wallet() {
 
             <div className="card-content">
 
-              <h3>Withdraw</h3>
+              <h3>
+                Withdraw
+              </h3>
 
               <p>
                 Withdraw money from your wallet.
@@ -243,9 +287,9 @@ function Wallet() {
                 min="0"
                 step="0.01"
                 placeholder="Enter amount"
-                value={amount}
+                value={withdrawAmount}
                 onChange={(e) =>
-                  setAmount(e.target.value)
+                  setWithdrawAmount(e.target.value)
                 }
               />
 
@@ -263,8 +307,10 @@ function Wallet() {
 
           </div>
 
+          {/* =========================
+              SEND
+          ========================= */}
 
-          {/* SEND */}
           <div className="action-card send-card">
 
             <div className="card-icon">
@@ -273,7 +319,9 @@ function Wallet() {
 
             <div className="card-content">
 
-              <h3>Send Money</h3>
+              <h3>
+                Send Money
+              </h3>
 
               <p>
                 Send money to another user's email.
@@ -290,8 +338,10 @@ function Wallet() {
 
           </div>
 
+          {/* =========================
+              RECEIVE
+          ========================= */}
 
-          {/* RECEIVE */}
           <div className="action-card receive-card">
 
             <div className="card-icon">
@@ -300,7 +350,9 @@ function Wallet() {
 
             <div className="card-content">
 
-              <h3>Receive</h3>
+              <h3>
+                Receive
+              </h3>
 
               <p>
                 Share your wallet information to receive money.
