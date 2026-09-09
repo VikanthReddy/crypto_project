@@ -1,25 +1,28 @@
 import { Link } from "react-router-dom";
-
+import { QRCodeSVG } from "qrcode.react";
 import Navbar from "../components/Navbar";
 
 function Receive() {
-  const user = JSON.parse(localStorage.getItem("user") || "null");
+  const user = JSON.parse(
+    localStorage.getItem("user") || "null"
+  );
 
   const copyEmail = async () => {
     if (!user?.email) return;
 
-    await navigator.clipboard.writeText(user.email);
-
-    alert("Email copied!");
+    try {
+      await navigator.clipboard.writeText(user.email);
+      alert("Email copied!");
+    } catch {
+      alert("Unable to copy email.");
+    }
   };
 
   return (
     <div>
-
       <Navbar />
 
       <main className="form-page">
-
         <div className="form-card receive-card">
 
           <Link to="/wallet" className="back-link">
@@ -29,17 +32,35 @@ function Receive() {
           <h1>Receive Money</h1>
 
           <p className="auth-subtitle">
-            Share your registered email address with
-            the person who wants to send you money.
+            Share your email or scan the QR code to receive money.
           </p>
 
           <div className="receive-box">
 
             <p>Your Wallet Email</p>
 
-            <h2>
-              {user?.email}
-            </h2>
+            <h2>{user?.email}</h2>
+
+            <div className="qr-section">
+
+              <div className="qr-wrapper">
+                <QRCodeSVG
+                  value={user?.email || ""}
+                  size={210}
+                  bgColor="#ffffff"
+                  fgColor="#000000"
+                  level="H"
+                />
+              </div>
+
+              <h3>Scan to Receive</h3>
+
+              <p className="qr-description">
+                Scan this QR code to get the wallet email
+                address.
+              </p>
+
+            </div>
 
             <button
               className="primary-button"
@@ -51,14 +72,12 @@ function Receive() {
           </div>
 
           <p className="receive-note">
-            The sender can use this email address
-            from the Send Money page.
+            The sender can scan this QR code or use your email
+            address from the Send Money page.
           </p>
 
         </div>
-
       </main>
-
     </div>
   );
 }
